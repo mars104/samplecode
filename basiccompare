@@ -58,24 +58,21 @@
 
 version: 2
 
+version: 2
+
 models:
   - name: Product_RCB_staging
     tests:
-      - name: compare_tables
-        threshold:
-          non_matching_rows: 0
-        args:
-          other_model: ref('Product_ACBS_staging')
+      - compare_tables:
+          other_model: "{{ ref('Product_ACBS_staging', database='<your_other_database>', schema='<your_other_schema>') }}"
           exclude_columns: ['column_to_exclude_1', 'column_to_exclude_2']
 
   - name: Product_ACBS_staging
     tests:
-      - name: compare_tables
-        threshold:
-          non_matching_rows: 0
-        args:
-          other_model: ref('Product_RCB_staging')
+      - compare_tables:
+          other_model: "{{ ref('Product_RCB_staging', database='<your_other_database>', schema='<your_other_schema>') }}"
           exclude_columns: ['column_to_exclude_1', 'column_to_exclude_2']
+
 
 
 dbt
