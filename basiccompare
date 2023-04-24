@@ -4,8 +4,12 @@
   {% set comparison_columns = [] %}
 
   {% for column in columns %}
-    {% if column.name not in exclude_columns and column in other_columns %}
-      {% set _ = comparison_columns.append(column) %}
+    {% if column.name not in exclude_columns %}
+      {% for other_column in other_columns %}
+        {% if other_column.name == column.name %}
+          {% set _ = comparison_columns.append(column) %}
+        {% endif %}
+      {% endfor %}
     {% endif %}
   {% endfor %}
 
