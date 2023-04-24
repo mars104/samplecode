@@ -1,6 +1,7 @@
-{% macro compare_tables(model, other_model, exclude_columns=[]) %}
+{% macro compare_tables(model, other_model, exclude_columns=[], other_database='', other_schema='') %}
   {% set columns = adapter.get_columns_in_relation(model) %}
-  {% set other_columns = adapter.get_columns_in_relation(other_model) %}
+  {% set other_relation = api.Relation.create(database=other_database, schema=other_schema, identifier=other_model, type='table') %}
+  {% set other_columns = adapter.get_columns_in_relation(other_relation) %}
   {% set comparison_columns = [] %}
 
   {% for column in columns %}
@@ -26,7 +27,7 @@
           SELECT {{ select_columns }} FROM {{ model }}
         ),
         other_model_data AS (
-          SELECT {{ select_columns }} FROM {{ other_model }}
+          SELECT {{ select_columns }} FROM {{ other_relation }}
         ),
         intersection AS (
           SELECT * FROM model_data
@@ -62,22 +63,25 @@ version: 2
 
 version: 2
 
+version: 2
+
 models:
   - name: Product_RCB_staging
-    database: <your_database>
-    schema: <your_schema>
     tests:
       - compare_tables:
-          other_model: "{{ model.set(database='<your_other_database>', schema='<your_other_schema>', name='Product_ACBS_staging') }}"
+          other_model: 'Product_ACBS_staging'
+          other_database: '<your_other_database>'
+          other_schema: '<your_other_schema>'
           exclude_columns: ['column_to_exclude_1', 'column_to_exclude_2']
 
   - name: Product_ACBS_staging
-    database: <your_database>
-    schema: <your_schema>
     tests:
       - compare_tables:
-          other_model: "{{ model.set(database='<your_other_database>', schema='<your_other_schema>', name='Product_RCB_staging') }}"
+          other_model: 'Product_RCB_staging'
+          other_database: '<your_other_database>'
+          other_schema: '<your_other_schema>'
           exclude_columns: ['column_to_exclude_1', 'column_to_exclude_2']
+
 
 dbt
 test
