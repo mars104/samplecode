@@ -86,3 +86,7 @@ models:
 dbt
 test
  --models Product_RCB_staging+Product_ACBS_staging
+ 
+ 
+ 
+   Invalid sources config given in models/sources.yml @ sources: {'name': 'Product_ACBS_staging2', 'tests': [{'compare_tables': {'other_model': 'Product_RCB_staging2', 'other_database': 'dmn01-rsksoi-bld-01-2017', 'other_schema': 'dmn01_rsksoi_euwe2_rsk_csp_upstream_staging', 'exclude_columns': ['column_to_exclude_1', 'column_to_exclude_2']}}]} - at path []: Additional properties are not allowed ('tests' was unexpected)
