@@ -14,7 +14,12 @@
   {% endfor %}
 
   {% if comparison_columns|length > 0 %}
-    {% set select_columns = ', '.join([column.name for column in comparison_columns]) %}
+    {% set select_columns_list = [] %}
+    {% for column in comparison_columns %}
+      {% set _ = select_columns_list.append(column.name) %}
+    {% endfor %}
+    {% set select_columns = ', '.join(select_columns_list) %}
+    
     {% set sql %}
       WITH
         model_data AS (
