@@ -1,0 +1,52 @@
+It sounds like you're looking for a more organized and efficient way to manage and run your dbt tests. Here's a suggested approach to achieve your goal:
+
+Create a tagging system for your tests:
+Organize your tests by adding tags to your YAML files or in your unique test SQL files. You can use tags to specify the related table, functionality, or any other relevant attribute. For example, you can add tags like this:
+
+In schema.yml:
+
+version: 2
+
+models:
+  - name: your_model
+    columns:
+      - name: column_name
+        tests:
+          - not_null:
+              tags: ["table_A", "data_quality"]
+
+
+Or in unique test SQL files:
+
+-- tags: ["table_A", "data_quality"]
+{{ config(tags=["table_A", "data_quality"]) }}
+
+SELECT ...
+
+Create a wrapper script or a Makefile:
+To avoid writing long commands each time, you can create a wrapper script (e.g., in Python, Bash, or PowerShell) or a Makefile that accepts input arguments specifying the tags you want to use for filtering the tests.
+
+For example, in a simple Bash script called run_dbt_tests.sh:
+
+
+#!/bin/bash
+
+# This script accepts a list of tags as input arguments and runs the dbt tests with those tags.
+
+tags=""
+for tag in "$@"
+do
+  tags+=" --models tag:$tag"
+done
+
+dbt test $tags
+
+
+
+Then, you can run the script with the tags you want to filter:
+./run_dbt_tests.sh table_A data_quality
+
+
+This will run tests only for the specified tags. You can create similar scripts for other platforms or use a Makefile to achieve the same functionality.
+
+By using tags and a wrapper script or Makefile, you can easily manage and orchestrate your dbt tests. You'll be able to run tests related to specific tables or functionalities without having to write long commands each time.
