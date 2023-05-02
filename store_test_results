@@ -1,0 +1,74 @@
+To write the test results and specific reasons for failure to a results table in Google Cloud Platform (GCP), you can use dbt's on-run-end hooks to execute a custom script that inserts the results into a BigQuery table. Here's a step-by-step guide to achieve this:
+
+Create a BigQuery table to store the test results:
+First, create a dataset in BigQuery if you haven't already. Then, create a table in the dataset with the following schema:
+
+CREATE TABLE your_dataset_name.dbt_test_results (
+    run_timestamp TIMESTAMP,
+    test_name STRING,
+    status STRING,
+    failure_reason STRING
+);
+
+Replace your_dataset_name with the name of the dataset you created.
+
+Create a Python script to insert test results:
+Create a new Python script (e.g., insert_test_results.py) in your dbt project directory to interact with the BigQuery API and insert test results into the table you created:
+
+import argparse
+import json
+import os
+from google.cloud import bigquery
+
+def insert_test_results(bigquery_project_id, bigquery_dataset, test_results):
+    client = bigquery.Client(project=bigquery_project_id)
+    table_id = f"{bigquery_project_id}.{bigquery_dataset}.dbt_test_results"
+    table = client.get_table(table_id)
+
+    rows_to_insert = []
+
+    for test in test_results:
+        row = (
+            test['run_timestamp'],
+            test['test_name'],
+            test['status'],
+            test['failure_reason']
+        )
+        rows_to_insert.append(row)
+
+    errors = client.insert_rows(table, rows_to_insert)
+
+    if errors:
+        print(f"Failed to insert rows: {errors}")
+    else:
+        print("Test results inserted successfully.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("bigquery_project_id")
+    parser.add_argument("bigquery_dataset")
+    parser.add_argument("test_results_json")
+    args = parser.parse_args()
+
+    test_results = json.loads(args.test_results_json)
+    insert_test_results(args.bigquery_project_id, args.bigquery_dataset, test_results)
+
+
+Set up Google Cloud credentials:
+To interact with BigQuery, you'll need to authenticate your script. Follow the official guide to set up a service account and download the JSON key file. Set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path of your key file:
+
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/keyfile.json"
+
+
+Add an on-run-end hook to your dbt_project.yml:
+In your dbt_project.yml, add an on-run-end hook that calls the insert_test_results.py script, passing the relevant parameters and the test results in JSON format:
+
+on-run-end:
+  - "python insert_test_results.py {{ env_var('BIGQUERY_PROJECT_ID') }} {{ env_var('BIGQUERY_DATASET') }} '{{ run_results.tojson() }}'"
+
+
+Replace BIGQUERY_PROJECT_ID and BIGQUERY_DATASET with the names of your GCP project and BigQuery dataset, respectively.
+
+Run your dbt tests:
+Now, when you run your dbt tests with dbt test, the test results and specific reasons for failure will be inserted into the dbt_test_results table in BigQuery.
+
