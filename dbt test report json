@@ -143,3 +143,60 @@ with open('dbt_test_report.txt', 'w') as file:
 ```
 
 This code snippet demonstrates how to parse the `run_results.json` file, categorize test results, create a summary, and generate a formatted report as a text file. You can further customize the formatting and presentation based on your requirements and stakeholder preferences.
+
+
+
+
+for a CSV report
+-------
+Certainly! You can use Python's built-in `csv` module to generate a CSV report. Here's how you can modify the previous example to generate a CSV report:
+
+1. First, make sure you have the `run_results.json` file from your DBT test run.
+
+2. Use Python to parse the JSON file and extract the relevant information, and then organize the test results into passes, fails, and errors (steps 2 and 3 from the previous example):
+
+```python
+import json
+
+# Load the run_results.json file
+with open('target/run_results.json', 'r') as file:
+    data = json.load(file)
+
+# Extract the test results
+test_results = data['results']
+
+passes = []
+fails = []
+errors = []
+
+for result in test_results:
+    if result['status'] == 'pass':
+        passes.append(result)
+    elif result['status'] == 'fail':
+        fails.append(result)
+    else:
+        errors.append(result)
+```
+
+3. Generate the CSV report:
+
+```python
+import csv
+
+# Define the CSV header
+header = ['Status', 'Test', 'Model', 'Message']
+
+# Combine the test results into a single list and add the status
+combined_results = [('Pass', *pass_test) for pass_test in passes] + \
+                   [('Fail', *fail_test) for fail_test in fails] + \
+                   [('Error', *error_test) for error_test in errors]
+
+# Write the report to a CSV file
+with open('dbt_test_report.csv', 'w', newline='') as csvfile:
+    csv_writer = csv.writer(csvfile)
+    csv_writer.writerow(header)
+    for result in combined_results:
+        csv_writer.writerow(result)
+```
+
+This code snippet demonstrates how to generate a CSV report with the test results. The generated CSV file will have a header row with columns 'Status', 'Test', 'Model', and 'Message', and each row will represent an individual test result.
