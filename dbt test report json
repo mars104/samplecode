@@ -1,0 +1,145 @@
+When running tests in DBT, you'll want to present the results to your stakeholders in an easy-to-understand format. You can achieve this by creating a test report that includes a summary and details of passes, fails, and errors for each test. Here's a step-by-step guide to creating such a report:
+
+1. Run tests in DBT:
+Execute the tests by running the following command:
+```
+dbt test
+```
+
+2. Capture test results:
+The test results will be available in the `target` folder under the `run_results.json` file. Parse this JSON file to extract the relevant information for your report. You can use Python or any other language to extract the data.
+
+3. Organize the test results:
+Categorize the test results into passes, fails, and errors. For each category, provide a count and a list of individual tests with their details (test name, model, and message).
+
+4. Create a summary:
+Summarize the total number of tests executed, the number of passes, fails, and errors, and the overall success rate.
+
+5. Format the report:
+Choose a format that is easy for your stakeholders to read and understand. This could be a simple text file, a well-formatted email, or even a PDF document with tables and charts.
+
+For example, your report could look like this:
+
+```
+DBT Test Report
+----------------
+Date: 2023-05-09
+
+Summary
+-------
+Total tests: 50
+Passes: 45
+Fails: 4
+Errors: 1
+Success rate: 90%
+
+Passes
+------
+1. Test: not_null_model_name, Model: model_name, Message: PASS
+...
+
+Fails
+-----
+1. Test: unique_model_name, Model: model_name, Message: FAIL - 5 duplicate records
+...
+
+Errors
+------
+1. Test: foreign_key_model_name, Model: model_name, Message: ERROR - Test not found
+```
+
+6. Share the report with stakeholders:
+Finally, share the generated report with your stakeholders via email, a shared folder, or any other appropriate method.
+
+Remember to customize the report based on the preferences and needs of your stakeholders to make it as informative and easy to understand as possible.
+
+
+Here's an example of how to implement steps 2-5 using Python:
+
+1. First, ensure you have the `run_results.json` file from your DBT test run.
+
+2. Use Python to parse the JSON file and extract the relevant information:
+
+```python
+import json
+
+# Load the run_results.json file
+with open('target/run_results.json', 'r') as file:
+    data = json.load(file)
+
+# Extract the test results
+test_results = data['results']
+```
+
+3. Organize the test results into passes, fails, and errors:
+
+```python
+passes = []
+fails = []
+errors = []
+
+for result in test_results:
+    if result['status'] == 'pass':
+        passes.append(result)
+    elif result['status'] == 'fail':
+        fails.append(result)
+    else:
+        errors.append(result)
+```
+
+4. Create a summary of the test results:
+
+```python
+total_tests = len(test_results)
+total_passes = len(passes)
+total_fails = len(fails)
+total_errors = len(errors)
+success_rate = (total_passes / total_tests) * 100
+```
+
+5. Generate the report as a formatted string:
+
+```python
+# Helper function to format test results
+def format_test_results(test_list):
+    formatted_results = []
+    for test in test_list:
+        formatted_results.append(f"Test: {test['test_name']}, Model: {test['model_name']}, Message: {test['message']}")
+    return "\n".join(formatted_results)
+
+report = f"""DBT Test Report
+----------------
+Date: 2023-05-09
+
+Summary
+-------
+Total tests: {total_tests}
+Passes: {total_passes}
+Fails: {total_fails}
+Errors: {total_errors}
+Success rate: {success_rate:.2f}%
+
+Passes
+------
+{format_test_results(passes)}
+
+Fails
+-----
+{format_test_results(fails)}
+
+Errors
+------
+{format_test_results(errors)}
+"""
+
+print(report)
+```
+
+6. Save the report to a text file:
+
+```python
+with open('dbt_test_report.txt', 'w') as file:
+    file.write(report)
+```
+
+This code snippet demonstrates how to parse the `run_results.json` file, categorize test results, create a summary, and generate a formatted report as a text file. You can further customize the formatting and presentation based on your requirements and stakeholder preferences.
