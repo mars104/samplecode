@@ -106,3 +106,6 @@ replace value	original value
 2081322766	1932141665
 2103859596	754239222
 2130056412	1608638957
+
+
+update  `dmn01-rsksoi-bld-01-2017.dmn01_rsksoi_euwe2_rsk_csp_cus_view.source_identifier_view` set external_reference = '6207647' where external_reference = '56240059' and external_sys_id = 99999 
