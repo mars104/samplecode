@@ -1,0 +1,27 @@
+{{max_length_test("model", "LEN_GRP_NM",255 )}}
+{{max_length_test("model", "LEN_GRP_STA_CD",3 )}}
+{{max_length_test("model", "LEN_GRP_LCY_STG_CD",3 )}}
+{{max_length_test("model", "CMY_CD",3 )}}
+{{max_length_test("model", "NET_LMT_CCY_CD",3 )}}
+{{max_length_test("model", "GRS_LMT_CCY_CD",3 )}}
+{{max_length_test("model", "LEN_GRP_VRC_OPR_ID",8 )}}
+{{max_length_test("model", "LEN_GRP_EXT_USR_ID",20 )}}
+{{max_length_test("model", "LEN_GRP_EXT_LCT_ID",20 )}}
+{{max_length_test("model", "LEN_GRP_SCB_MFD_IN",1 )}}
+{{max_length_test("model", "SORTCODE",6 )}}
+
+
+{{not_null_test("model", "LEN_GRP_ID" )}}
+{{not_null_test("model", "LEN_GRP_VRS_NO" )}}
+{{not_null_test("model", "LEN_GRP_NM" )}}
+{{not_null_test("model", "LEN_GRP_STA_CD" )}}
+{{not_null_test("model", "LEN_GRP_LCY_STG_CD" )}}
+{{not_null_test("model", "OU_ID" )}}
+{{not_null_test("model", "CMY_CD" )}}
+{{not_null_test("model", "SORTCODE" )}}
+{{not_null_test("model", "HDS_START_DATE" )}}
+{{not_null_test("model", "HDS_END_DATE" )}}
+
+
+{{unique_column_test("model", "LEN_GRP_ID" )}}
+{{unique_column_test("model", "LEN_GRP_VRS_NO" )}}
