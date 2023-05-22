@@ -1,6 +1,7 @@
 delete in tranches 2
 
 DECLARE @BatchSize INT = 1000; -- Adjust the batch size as per your requirement
+DECLARE @RowsDeleted INT;
 
 CREATE TABLE #Duplicates (MappingId INT, EntityCustomerMappingTS BIGINT)
 
@@ -17,10 +18,14 @@ BEGIN
     IF @@ROWCOUNT = 0
         BREAK;
 
+    SET @RowsDeleted = @@ROWCOUNT;
+
     DELETE MyTable
     FROM MyTable
     INNER JOIN #Duplicates D 
     ON MyTable.MappingId = D.MappingId AND MyTable.EntityCustomerMappingTS = D.EntityCustomerMappingTS
+
+    PRINT 'Deleted ' + CAST(@RowsDeleted AS VARCHAR) + ' rows in this batch';
 
     TRUNCATE TABLE #Duplicates
 END
