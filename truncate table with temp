@@ -1,0 +1,29 @@
+CREATE TABLE #TempTable (MappingId INT, EntityCustomerMappingTS BIGINT, [OtherColumns] [OtherDataTypes])
+
+INSERT INTO #TempTable (MappingId, EntityCustomerMappingTS, [OtherColumns])
+SELECT T.MappingId, T.EntityCustomerMappingTS, T.[OtherColumns]
+FROM (
+    SELECT MappingId, EntityCustomerMappingTS, [OtherColumns],
+        ROW_NUMBER() OVER (PARTITION BY MappingId ORDER BY EntityCustomerMappingTS DESC) AS RowNumber
+    FROM MyTable
+) T
+WHERE T.RowNumber = 1
+
+-- Begin transaction
+BEGIN TRAN
+
+    -- Lock the table
+    TABLOCKX MyTable
+
+    -- Truncate the table
+    TRUNCATE TABLE MyTable
+
+    -- Repopulate the table from the temporary table
+    INSERT INTO MyTable (MappingId, EntityCustomerMappingTS, [OtherColumns])
+    SELECT MappingId, EntityCustomerMappingTS, [OtherColumns] FROM #TempTable
+
+-- End transaction
+COMMIT TRAN
+
+-- Drop the temporary table
+DROP TABLE #TempTable
