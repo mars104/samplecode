@@ -1,29 +1,29 @@
 delete in tranches 2
 
-CREATE TABLE #Duplicates (ID INT)
+DECLARE @BatchSize INT = 1000; -- Adjust the batch size as per your requirement
 
-INSERT INTO #Duplicates (ID)
-SELECT TOP (@BatchSize) T.ID
-FROM (
-    SELECT ROW_NUMBER() OVER (PARTITION BY BINARY_CHECKSUM(*) ORDER BY %%physloc%%) AS RowNumber, ID
-    FROM MyTable
-) T
-WHERE T.RowNumber > 1
+CREATE TABLE #Duplicates (MappingId INT, EntityCustomerMappingTS BIGINT)
 
-WHILE @@ROWCOUNT > 0
+WHILE 1 = 1
 BEGIN
-    DELETE MyTable
-    FROM MyTable
-    JOIN #Duplicates d ON MyTable.ID = d.ID
-
-    DELETE FROM #Duplicates
-
-    INSERT INTO #Duplicates (ID)
-    SELECT TOP (@BatchSize) T.ID
+    INSERT INTO #Duplicates (MappingId, EntityCustomerMappingTS)
+    SELECT TOP (@BatchSize) T.MappingId, T.EntityCustomerMappingTS
     FROM (
-        SELECT ROW_NUMBER() OVER (PARTITION BY BINARY_CHECKSUM(*) ORDER BY %%physloc%%) AS RowNumber, ID
+        SELECT ROW_NUMBER() OVER (PARTITION BY MappingId ORDER BY EntityCustomerMappingTS DESC) AS RowNumber, MappingId, EntityCustomerMappingTS
         FROM MyTable
     ) T
     WHERE T.RowNumber > 1
+
+    IF @@ROWCOUNT = 0
+        BREAK;
+
+    DELETE MyTable
+    FROM MyTable
+    INNER JOIN #Duplicates D 
+    ON MyTable.MappingId = D.MappingId AND MyTable.EntityCustomerMappingTS = D.EntityCustomerMappingTS
+
+    TRUNCATE TABLE #Duplicates
 END
+
 DROP TABLE #Duplicates
+
