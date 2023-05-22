@@ -1,0 +1,29 @@
+delete in tranches 2
+
+CREATE TABLE #Duplicates (ID INT)
+
+INSERT INTO #Duplicates (ID)
+SELECT TOP (@BatchSize) T.ID
+FROM (
+    SELECT ROW_NUMBER() OVER (PARTITION BY BINARY_CHECKSUM(*) ORDER BY %%physloc%%) AS RowNumber, ID
+    FROM MyTable
+) T
+WHERE T.RowNumber > 1
+
+WHILE @@ROWCOUNT > 0
+BEGIN
+    DELETE MyTable
+    FROM MyTable
+    JOIN #Duplicates d ON MyTable.ID = d.ID
+
+    DELETE FROM #Duplicates
+
+    INSERT INTO #Duplicates (ID)
+    SELECT TOP (@BatchSize) T.ID
+    FROM (
+        SELECT ROW_NUMBER() OVER (PARTITION BY BINARY_CHECKSUM(*) ORDER BY %%physloc%%) AS RowNumber, ID
+        FROM MyTable
+    ) T
+    WHERE T.RowNumber > 1
+END
+DROP TABLE #Duplicates
