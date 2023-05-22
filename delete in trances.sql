@@ -9,6 +9,6 @@ BEGIN
     ) T
     WHERE T.RowNumber > 1;
 
-    IF @@ROWCOUNT < @BatchSize
+    IF @@ROWCOUNT = 0
         BREAK;
 END
