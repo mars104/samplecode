@@ -1,13 +1,12 @@
 show size of each db on server
-
 EXEC sp_MSforeachdb N'
 USE [?];
 SELECT 
     DB_NAME() AS DatabaseName,
-    SUM(size * 8 / 1024) AS DatabaseSizeInMB 
+    SUM(size * 8.0 / 1024) AS DatabaseSizeInMB 
 FROM sys.master_files 
-WHERE type = 0 AND state = 0
-GROUP BY DB_NAME()';
+WHERE type = 0 AND state = 0';
+
 
 Msg 164, Level 15, State 1, Line 8
 Each GROUP BY expression must contain at least one column that is not an outer reference.
