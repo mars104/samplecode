@@ -1,0 +1,32 @@
+DECLARE @BatchSize INT = 1000; -- Adjust the batch size as per your requirement
+
+CREATE TABLE #Duplicates (MappingId INT, EntityCustomerMappingTS BIGINT)
+
+WHILE 1 = 1
+BEGIN
+    WITH CTE AS
+    (
+        SELECT MappingId, MAX(EntityCustomerMappingTS) AS MaxEntityCustomerMappingTS
+        FROM MyTable
+        GROUP BY MappingId
+    )
+    INSERT INTO #Duplicates (MappingId, EntityCustomerMappingTS)
+    SELECT TOP (@BatchSize) M.MappingId, M.EntityCustomerMappingTS
+    FROM MyTable M
+    LEFT JOIN CTE ON M.MappingId = CTE.MappingId AND M.EntityCustomerMappingTS = CTE.MaxEntityCustomerMappingTS
+    WHERE CTE.MappingId IS NULL
+
+    IF @@ROWCOUNT = 0
+        BREAK;
+
+    DELETE MyTable
+    FROM MyTable
+    INNER JOIN #Duplicates D 
+    ON MyTable.MappingId = D.MappingId AND MyTable.EntityCustomerMappingTS = D.EntityCustomerMappingTS
+
+    PRINT 'Deleted ' + CAST(@@ROWCOUNT AS VARCHAR) + ' rows in this batch';
+
+    TRUNCATE TABLE #Duplicates
+END
+
+DROP TABLE #Duplicates
