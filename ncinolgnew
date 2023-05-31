@@ -1,0 +1,3 @@
+SELECT 
+LLC_BI__Connected_To__r.LLC_BI__LookupKey__c ,LLC_BI__Connected_To__r.Name,
+LLC_BI__Connected_From__r.LLC_BI__LookupKey__c ,LLC_BI__Connected_From__r.Name From LLC_BI__Connection__c where LLC_BI__Connected_To__r.LLC_BI__LookupKey__c like '%GRP%'
