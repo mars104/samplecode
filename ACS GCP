@@ -66,8 +66,8 @@ ProductReference,
 --EligibleforCRH,
 --EligibleforTrancheDrawdown,
 --ExternalID,
-SourceSystem,
-BusinessDateOfExtract,
+--SourceSystem,
+--BusinessDateOfExtract,
 --CreationDate,
 --UpdateDateTime
 from `dmn01-rsksoi-bld-01-2017.dmn01_rsksoi_euwe2_rsk_csp_upstream_staging.Product_CAP`
