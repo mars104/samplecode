@@ -1,0 +1,52 @@
+Here is where you could replace the existing comparison line with the new logic:
+
+```python
+# ... (continuing your code)
+# Count number of matching and non-matching fields
+matching_fields = np.sum(merged_df['_merge'] == 'both')
+total_fields = merged_df.size
+non_matching_fields = total_fields - matching_fields
+
+# Append the summary to the top of the dataframe
+summary_df = pd.DataFrame({
+    'Total Rows': [total_rows],
+    'Matching Rows': [matching_rows],
+    'Non-matching Rows': [non_matching_rows],
+})
+
+# Save the summary dataframe to a CSV file
+summary_file_path = os.path.join(results_dir, f'{test_name}_results.csv')
+summary_df.to_csv(summary_file_path)
+
+# Append the merged dataframe to the same CSV file
+merged_df.to_csv(summary_file_path, mode='a')
+
+# If you only want to see the differences, you can filter the rows where '_merge' is not 'both'
+differences_df = merged_df[merged_df['_merge'] != 'both']
+log_message = "Differences between datasets: {}".format(differences_df) 
+logging.info(log_message)
+#logging.info(differences_df)
+
+# Check if the DataFrames are equal - change this part
+# Old line
+# if df_bigquery.sort_values(by=list(df_bigquery.columns)).reset_index(drop=True).equals(df_salesforce.sort_values(by=list(df_salesforce.columns)).reset_index(drop=True)):
+# New comparison lines
+df_bigquery_sorted = df_bigquery.sort_values(by=list(df_bigquery.columns)).reset_index(drop=True)
+df_salesforce_sorted = df_salesforce.sort_values(by=list(df_salesforce.columns)).reset_index(drop=True)
+comparison_df = df_bigquery_sorted.eq(df_salesforce_sorted)
+equal_arrays = comparison_df.all().all()
+
+if equal_arrays:
+    log_message = "Test {} Passed: Both BigQuery and Salesforce results match.".format(test_name)
+    logging.info(log_message)
+else:
+    log_message = "Test {} Failed: BigQuery and Salesforce results do not match.".format(test_name)
+    logging.info(log_message)
+    failed_tests.append(f"Test {test_name} Failed: BigQuery and Salesforce results do not match.")
+
+# ... (continue your code)
+```
+
+In this modification, we first sort and reset the index for both `df_bigquery` and `df_salesforce`, then create a comparison DataFrame (`comparison_df`) using the `.eq()` function which compares the two DataFrames element-wise. If all elements are equal (`equal_arrays` is True), the two DataFrames are considered to be equal.
+
+Please note that this comparison does not consider data types or precision, so you may want to add some data cleaning steps before comparison if your data includes floating point numbers or similar data types.
