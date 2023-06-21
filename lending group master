@@ -1,0 +1,43 @@
+SELECT LLC_BI__Connected_To__r.LLC_BI__LookupKey__c ,
+LLC_BI__Connected_To__r.Name, 
+LLC_BI__Connected_To__r.CCS_Bank_Entity__c,
+LLC_BI__Connected_To__r.CCS_Is_part_of_ORG__c,
+
+
+
+LLC_BI__Connected_To__r.CCS_OUCode__c,
+LLC_BI__Connected_To__r.CCS_Sort_Code__c,
+LLC_BI__Connected_To__r.RecordTypeId,
+LLC_BI__Connected_To__r.LLC_BI__Status__c,
+
+
+
+
+
+
+
+LLC_BI__Connected_From__r.LLC_BI__LookupKey__c ,
+LLC_BI__Connected_From__r.Name, 
+LLC_BI__Connected_From__r.CCS_Bank_Entity__c,
+LLC_BI__Connected_From__r.CCS_Is_part_of_ORG__c,
+LLC_BI__Connected_From__r.CCS_OUCode__c,
+LLC_BI__Connected_From__r.CCS_Sort_Code__c,
+LLC_BI__Connected_From__r.RecordTypeId,
+LLC_BI__Connected_From__r.LLC_BI__Status__c,
+
+
+
+LLC_BI__Connection__c.CCS_is_Key_Account_Party__c,
+LLC_BI__Connection__c.CCS_is_Signatory__c,
+
+LLC_BI__Connection__c.CCS_Is_ORG_Lead__c,
+LLC_BI__Connection__c.CCS_ORG_Lead__c,
+
+LLC_BI__Connection__c.LLC_BI__Certifying_Individual__c
+
+
+
+
+
+From LLC_BI__Connection__c 
+where LLC_BI__Connected_To__r.LLC_BI__LookupKey__c like '%GRP%'
