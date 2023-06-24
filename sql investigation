@@ -57,3 +57,6 @@ AND ( OCI_CMD.PTY_ID IS NOT NULL OR TPA.PTY_ID IS NOT NULL )  --HAS CMD OCIS CON
 
 select entityid, OCIS_ID, DERIVATION into #OCIS_INF FROM 
 A
+
+
+Warning: Null value is eliminated by an aggregate or other SET operation.
